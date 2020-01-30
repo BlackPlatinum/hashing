@@ -1,0 +1,2 @@
+BlackPlatinum Hashing Component
+=======
