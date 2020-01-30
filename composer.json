@@ -1,0 +1,31 @@
+{
+  "name": "blackplatinum/hashing",
+  "description": "The BlackPlatinum hashing component",
+  "keywords": [
+    "hashing",
+    "hash",
+    "hasher"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "BlackPlatinum Developers",
+      "email": "blackplatinum2019@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "ext-json": "*"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "BlackPlatinum\\Hashing\\": ""
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
