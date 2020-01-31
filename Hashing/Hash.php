@@ -84,7 +84,7 @@ class Hash extends BaseHasher
      */
     public function makeHash($data, array $options = self::ARGON2_OPTIONS)
     {
-        if (!self::validateAlgorithm()) {
+        if (!$this->validateAlgorithm()) {
             throw new HashException("Wrong algorithm name!");
         }
         $hash = password_hash((is_string($data) ? $data : json_encode($data)), self::mapper($this->algorithm),
