@@ -8,7 +8,7 @@
  * Base hasher class
  **/
 
-namespace BlackPlatinum\Hashing\BaseHasher;
+namespace BlackPlatinum\Hashing\Core\BaseHasher;
 
 
 abstract class BaseHasher
@@ -22,17 +22,17 @@ abstract class BaseHasher
 
 
     // Making hash
-    protected abstract static function makeHash($data, $algorithm, array $options);
+    protected abstract function makeHash($data, array $options);
 
 
     // Verifying hash
-    protected abstract static function verifyHash($data, $hash);
+    protected abstract function verifyHash($data, $hash);
 
 
     // Checking if data needs rehash
-    protected abstract static function needsRehash($hash, $algorithm, array $options);
+    protected abstract function needsRehash($hash, array $options);
 
 
     // Getting information about made hash
-    protected abstract static function hashInfo($hash);
+    protected abstract function hashInfo($hash);
 }
