@@ -22,17 +22,17 @@ abstract class BaseHasher
 
 
     // Making hash
-    protected abstract function makeHash($data, array $options);
+    protected static abstract function makeHash($data, array $options);
 
 
     // Verifying hash
-    protected abstract function verifyHash($data, $hash);
+    protected static abstract function verifyHash($data, $hash);
 
 
     // Checking if data needs rehash
-    protected abstract function needsRehash($hash, array $options);
+    protected static abstract function needsRehash($hash, array $options);
 
 
     // Getting information about made hash
-    protected abstract function hashInfo($hash);
+    protected static abstract function hashInfo($hash);
 }
