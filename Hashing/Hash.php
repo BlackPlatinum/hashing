@@ -21,12 +21,12 @@ class Hash extends BaseHasher
     /**
      * @var string The hash algorithm
      */
-    private $algorithm;
+    private static $algorithm;
 
     /**
      * @var array Map array
      */
-    private $map = ["BCRYPT" => 1, "ARGON2I" => 2, "ARGON2ID" => 3];
+    private static $map = ["BCRYPT" => 1, "ARGON2I" => 2, "ARGON2ID" => 3];
 
     /**
      * @var array Default BCRYPT options
@@ -47,7 +47,7 @@ class Hash extends BaseHasher
     public function __construct($algorithm = "ARGON2ID")
     {
         parent::__construct();
-        $this->algorithm = strtoupper($algorithm);
+        self::$algorithm = strtoupper($algorithm);
     }
 
 
@@ -57,9 +57,9 @@ class Hash extends BaseHasher
      *
      * @return integer
      */
-    private function mapper($algorithmName)
+    private static function mapper($algorithmName)
     {
-        return $this->map[$algorithmName];
+        return self::$map[$algorithmName];
     }
 
 
@@ -68,9 +68,33 @@ class Hash extends BaseHasher
      *
      * @return boolean Returns True if algorithm name is correct, False otherwise
      */
-    private function validateAlgorithm()
+    private static function validateAlgorithm()
     {
-        return in_array($this->algorithm, self::supported(), true);
+        return in_array(self::$algorithm, self::supported(), true);
+    }
+
+
+    /**
+     * Set the algorithm name <p> The default algorithm is ARGON2ID
+     *
+     * @param  string  $algorithm  The algorithm name
+     *
+     * @return Hash Returns a new instance of Hash
+     */
+    public static function setHashAlgorithm($algorithm = "ARGON2ID")
+    {
+        return new Hash($algorithm);
+    }
+
+
+    /**
+     * Returns the algorithm name
+     *
+     * @return string Returns the algorithm name
+     */
+    public static function getHashAlgorithm()
+    {
+        return self::$algorithm;
     }
 
 
@@ -82,12 +106,12 @@ class Hash extends BaseHasher
      * @return string Returns computed hash data
      * @throws HashException Throws exception if can not hash the data
      */
-    public function makeHash($data, array $options = self::ARGON2_OPTIONS)
+    public static function makeHash($data, array $options = self::ARGON2_OPTIONS)
     {
         if (!self::validateAlgorithm()) {
             throw new HashException("Wrong algorithm name!");
         }
-        $hash = password_hash((is_string($data) ? $data : json_encode($data)), self::mapper($this->algorithm),
+        $hash = password_hash((is_string($data) ? $data : json_encode($data)), self::mapper(self::$algorithm),
                 $options);
         if (!$hash) {
             throw new HashException("Could not hash the data!");
@@ -96,14 +120,14 @@ class Hash extends BaseHasher
     }
 
 
-    /** Verify hash authenticity
+    /** Verifies hash authenticity
      *
      * @param  mixed   $data  The data is being hashed
      * @param  string  $hash  The computed hash
      *
      * @return boolean Returns True if hash is verified, False otherwise
      */
-    public function verifyHash($data, $hash)
+    public static function verifyHash($data, $hash)
     {
         return password_verify((is_string($data) ? $data : json_encode($data)), $hash);
     }
@@ -117,20 +141,20 @@ class Hash extends BaseHasher
      *
      * @return boolean Returns True if it needs rehash, False otherwise
      */
-    public function needsRehash($hash, array $options = self::ARGON2_OPTIONS)
+    public static function needsRehash($hash, array $options = self::ARGON2_OPTIONS)
     {
-        return password_needs_rehash($hash, $this->mapper($this->algorithm), $options);
+        return password_needs_rehash($hash, self::mapper(self::$algorithm), $options);
     }
 
 
     /**
-     * Returns hash information
+     * Returns the hash information
      *
      * @param  string  $hash  The computed hash
      *
-     * @return array Returns hash information
+     * @return array Returns the hash information
      */
-    public function hashInfo($hash)
+    public static function hashInfo($hash)
     {
         return password_get_info($hash);
     }
