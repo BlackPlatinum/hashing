@@ -19,11 +19,6 @@ class Hash extends BaseHasher
 {
 
     /**
-     * @var string The hash algorithm
-     */
-    private static $algorithm;
-
-    /**
      * @var array Map array
      */
     private static $map = ["BCRYPT" => 1, "ARGON2I" => 2, "ARGON2ID" => 3];
@@ -41,19 +36,16 @@ class Hash extends BaseHasher
 
     /**
      * Constructor
-     *
-     * @param  string  $algorithm  The algorithm name <p> The default algorithm is ARGON2ID
      */
-    public function __construct($algorithm = "ARGON2ID")
+    private function __construct()
     {
         parent::__construct();
-        self::$algorithm = strtoupper($algorithm);
     }
 
 
     /** Maps the algorithm name to an integer
      *
-     * @param $algorithmName
+     * @param  string  $algorithmName
      *
      * @return integer
      */
@@ -66,52 +58,32 @@ class Hash extends BaseHasher
     /**
      * Validates the algorithm name
      *
+     * @param  string  $algorithm  The hash algorithm
+     *
      * @return boolean Returns True if algorithm name is correct, False otherwise
      */
-    private static function validateAlgorithm()
+    private static function validateAlgorithm($algorithm)
     {
-        return in_array(self::$algorithm, self::supported(), true);
-    }
-
-
-    /**
-     * Set the algorithm name <p> The default algorithm is ARGON2ID
-     *
-     * @param  string  $algorithm  The algorithm name
-     *
-     * @return Hash Returns a new instance of Hash
-     */
-    public static function setHashAlgorithm($algorithm = "ARGON2ID")
-    {
-        return new Hash($algorithm);
-    }
-
-
-    /**
-     * Returns the algorithm name
-     *
-     * @return string Returns the algorithm name
-     */
-    public static function getHashAlgorithm()
-    {
-        return self::$algorithm;
+        return in_array($algorithm, self::supported(), true);
     }
 
 
     /** Makes hash from a data
      *
-     * @param  mixed  $data     The data is being hashed
-     * @param  array  $options  An associative array containing options
+     * @param  mixed   $data       The data is being hashed
+     * @param  string  $algorithm  The hash algorithm
+     * @param  array   $options    An associative array containing options
      *
      * @return string Returns computed hash data
-     * @throws HashException Throws exception if can not hash the data
+     * @throws HashException Throws exception if can not hash the data or can not detect the algorithm
      */
-    public static function makeHash($data, array $options = self::ARGON2_OPTIONS)
+    public static function makeHash($data, $algorithm = "ARGON2ID", array $options = self::ARGON2_OPTIONS)
     {
-        if (!self::validateAlgorithm()) {
+        $algorithm = strtoupper($algorithm);
+        if (!self::validateAlgorithm($algorithm)) {
             throw new HashException("Wrong algorithm name!");
         }
-        $hash = password_hash((is_string($data) ? $data : json_encode($data)), self::mapper(self::$algorithm),
+        $hash = password_hash((is_string($data) ? $data : json_encode($data)), self::mapper($algorithm),
                 $options);
         if (!$hash) {
             throw new HashException("Could not hash the data!");
@@ -136,14 +108,20 @@ class Hash extends BaseHasher
     /**
      * Checks if data needs rehash or not
      *
-     * @param  string  $hash     The computed hash
-     * @param  array   $options  An associative array containing options
+     * @param  string  $hash       The computed hash
+     * @param  string  $algorithm  The hash algorithm
+     * @param  array   $options    An associative array containing options
      *
      * @return boolean Returns True if it needs rehash, False otherwise
+     * @throws HashException Throws exception if can not detect the algorithm
      */
-    public static function needsRehash($hash, array $options = self::ARGON2_OPTIONS)
+    public static function needsRehash($hash, $algorithm = "ARGON2ID", array $options = self::ARGON2_OPTIONS)
     {
-        return password_needs_rehash($hash, self::mapper(self::$algorithm), $options);
+        $algorithm = strtoupper($algorithm);
+        if (!self::validateAlgorithm($algorithm)) {
+            throw new HashException("Wrong algorithm name!");
+        }
+        return password_needs_rehash($hash, self::mapper($algorithm), $options);
     }
 
 
