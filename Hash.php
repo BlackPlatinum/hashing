@@ -8,7 +8,7 @@
  * Main hasher class
  **/
 
-namespace BlackPlatinum\Hashing\Hashing;
+namespace BlackPlatinum\Hashing;
 
 
 use BlackPlatinum\Hashing\Core\BaseHasher\BaseHasher;
